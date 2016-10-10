@@ -7,29 +7,31 @@ from scipy.stats import norm
 import math
 from matplotlib import pyplot as plt
 
-N = 1000
+N = 1000    # 標本数
 
-mu0 = 3.0
-mu1 = 0.0
-sig0 = 0.5
-sig1 = 3.0
-pi0 = 0.6
-pi1 = 0.4
+mu0 = 3.0   # 正常標本の平均
+mu1 = 0.0   # 異常標本の平均
+sig0 = 0.5  # 正常標本の標準偏差
+sig1 = 3.0  # 異常標本の標準偏差
+pi0 = 0.6   # 正常標本の出現率
+pi1 = 0.4   # 異常標本の出現率
 
-n0 = norm.rvs(mu0, sig0, size=N*pi0)
-n1 = norm.rvs(mu1, sig1, size=N*pi1)
-n = np.concatenate([n0, n1])
+# 混合正規分布モデルを作成
+n0 = norm.rvs(mu0, sig0, size=N*pi0)    # 正常標本
+n1 = norm.rvs(mu1, sig1, size=N*pi1)    # 異常標本
+n = np.concatenate([n0, n1])    # 混合
 np.random.shuffle(n)            # シャッフル
 
-# 期待値-最大化法
-ite = range(20)
-pi0 = 0.5
+
+# 初期値
+pi0 = 0.5       
 pi1 = 0.5
 mu0 = 5.0
 mu1 = -5.0
 sig0 = 1.0
 sig1 = 5.0
 
+# 結果格納リスト
 pi0_list = []
 pi1_list = []
 mu0_list = []
@@ -37,12 +39,17 @@ mu1_list = []
 sig0_list = []
 sig1_list = []
 
+# 期待値-最大化法
+ite = range(20) # 反復回数
+
 for i in ite:
+    # 帰属度を計算
     piN0 = norm.pdf(x=n, loc=mu0, scale=sig0)
     piN1 = norm.pdf(x=n, loc=mu1, scale=sig1)
     qn0 = piN0 / (piN0 + piN1)
     qn1 = piN1 / (piN0 + piN1)
 
+    # パラメータを計算
     pi0 = qn0.sum() / N
     pi1 = qn1.sum() / N
     mu0 = (qn0 * n).sum() / (N * pi0)
@@ -50,6 +57,7 @@ for i in ite:
     sig0 = math.sqrt((qn0 * (n - mu0) * (n - mu0)).sum() / (N * pi0))
     sig1 = math.sqrt((qn1 * (n - mu1) * (n - mu1)).sum() / (N * pi1))
 
+    # 結果を格納
     pi0_list.append(pi0)
     pi1_list.append(pi1)
     mu0_list.append(mu0)
