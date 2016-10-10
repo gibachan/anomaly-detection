@@ -26,7 +26,7 @@ Sx = np.cov(X, rowvar=0, bias=1) # 標本共分散行列
 a = (Xc.dot(np.linalg.pinv(Sx)) * Xc).sum(axis=1)
 
 # 閾値を設定
-th = chi2.isf(1 - 0.99, 1)
+th = chi2.isf(1 - 0.99, 2)  # 自由度2のカイ２乗分布
 
 # 異常度をプロット
 plt.plot(range(len(a)), a, "bo")
